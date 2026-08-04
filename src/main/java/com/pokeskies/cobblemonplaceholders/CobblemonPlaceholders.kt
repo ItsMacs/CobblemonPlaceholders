@@ -10,6 +10,7 @@ import com.pokeskies.cobblemonplaceholders.placeholders.types.party.*
 import com.pokeskies.cobblemonplaceholders.placeholders.types.pc.PCBoxCount
 import com.pokeskies.cobblemonplaceholders.placeholders.types.pokedex.*
 import com.pokeskies.cobblemonplaceholders.placeholders.types.species.*
+import com.pokeskies.cobblemonplaceholders.utils.DexUtils
 import com.pokeskies.cobblemonplaceholders.utils.Utils
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
@@ -51,6 +52,10 @@ class CobblemonPlaceholders : ModInitializer {
             registerPlaceholders()
             Utils.printInfo("All placeholders now registered!")
         })
+        // Dexes are rebuilt from datapacks on every reload, so the cached entry lists behind the
+        // pokedex placeholders have to be dropped with them or they would serve the old dex.
+        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register { _, _, _ -> DexUtils.invalidate() }
+
         CommandRegistrationCallback.EVENT.register { dispatcher, _, _ ->
             BaseCommands().register(
                 dispatcher
